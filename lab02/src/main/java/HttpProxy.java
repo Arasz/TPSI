@@ -1,18 +1,22 @@
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+import com.sun.media.jfxmedia.track.Track;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.xml.internal.fastinfoset.Encoder;
+import com.sun.xml.internal.fastinfoset.util.StringArray;
+import sun.misc.IOUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by arasz on 08.04.2016.
@@ -22,7 +26,6 @@ public class HttpProxy
     int _port;
     int _outPort;
     HttpServer _server;
-    java.net.URLConnection _httpUrlConnection;
 
     public HttpProxy(int port, int outputPort) throws IOException
     {
@@ -43,50 +46,93 @@ public class HttpProxy
 
         public void handle(HttpExchange httpExchange) throws IOException
         {
-            System.out.println("Inside handler");
-            URI uri = httpExchange.getRequestURI();
-            _httpUrlConnection = new URL(uri.toURL().toString()).openConnection();
 
+            URI uri = httpExchange.getRequestURI();
+            HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
+            httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
+            httpUrlConnection.setDoOutput(true);
+            httpUrlConnection.setDoInput(true);
+            //httpUrlConnection.setConnectTimeout(10000);
+            //httpUrlConnection.setReadTimeout(10000);
+
+            System.out.println("----> Opening connection with: "+ uri.toString());
+            System.out.println("----> Request method: " + httpUrlConnection.getRequestMethod());
 
             for(Map.Entry<String, List<String>> header: httpExchange.getRequestHeaders().entrySet())
             {
-                _httpUrlConnection.addRequestProperty(header.getKey(), header.getValue().get(0));
+                String values = join(header.getValue(),", ");
+                httpUrlConnection.setRequestProperty(header.getKey(), values);
+                System.out.println("--->"+header.getKey()+" : "+values);
             }
-            _httpUrlConnection.connect();
 
-
-            Object conntent = _httpUrlConnection.getContent();
-            System.out.println(conntent.getClass().toString());
-            System.out.println(_httpUrlConnection.getContentType().toString());
-
-            byte[] bytes;
-
-            try(InputStream inputStream = _httpUrlConnection.getInputStream())
+            try(InputStream inputStream = httpExchange.getRequestBody())
             {
-                int available = inputStream.available();
-                bytes = new byte[available];
-                while(available!=0)
+                System.out.println("--> Request body size [bytes]: "+inputStream.available());
+                if(inputStream.available()>0)
                 {
-                    inputStream.read(bytes);
-                    available = inputStream.available();
+                    try(OutputStream outputStream = httpUrlConnection.getOutputStream())
+                    {
+                        outputStream.write(IOUtils.readFully(inputStream, -1, true));
+                    }
                 }
             }
 
 
-            for(Map.Entry<String, List<String>> header: _httpUrlConnection.getHeaderFields().entrySet())
+            httpUrlConnection.connect();
+
+            byte[] bytes = new byte[0];
+            try (InputStream inputStream =  httpUrlConnection.getInputStream())
             {
-                System.out.println("Key: "+header.getKey()+" Value: "+header.getValue());
-                if(header.getKey()!=null)
-                    httpExchange.getResponseHeaders().add(header.getKey(), header.getValue().get(0));
+                bytes = IOUtils.readFully(inputStream, -1, true);
+            }
+            catch (Exception ex)
+            {
+                System.err.println(ex.getMessage());
+                System.err.print(httpUrlConnection.getRequestMethod());
             }
 
-            httpExchange.sendResponseHeaders(200,-1);
-            httpExchange.getResponseBody().write(bytes);
+            int response = httpUrlConnection.getResponseCode();
+            long contentLength= httpUrlConnection.getContentLengthLong();
+
+
+            for(Map.Entry<String, List<String>> header: httpUrlConnection.getHeaderFields().entrySet())
+            {
+                if(header.getKey()!=null)
+                {
+                    String key = header.getKey();
+                    if(key!=null)
+                    {
+                        if(key.equals("Transfer-Encoding"))
+                            contentLength = 0;
+
+                        String values = join(header.getValue(), ", ");
+                        httpExchange.getResponseHeaders().set(key, values.substring(0, values.length()-2));
+                        System.out.println("->"+header.getKey()+" : "+values);
+                    }
+                }
+            }
+
+
+            //httpExchange.setAttribute("Content-Type", httpUrlConnection.getContentType());
+            httpExchange.sendResponseHeaders(response, contentLength);
             try(OutputStream httpOutputStream = httpExchange.getResponseBody())
             {
                 httpOutputStream.write(bytes);
             }
+            System.out.println(response + "; "+contentLength);
+            httpUrlConnection.disconnect();
         }
     }
 
+
+    private String join(Collection<String> collection, String joint)
+    {
+        StringBuilder values = new StringBuilder();
+        for (String val : collection)
+        {
+            values.append(val);
+            values.append(joint);
+        }
+        return values.toString();
+    }
 }
