@@ -2,11 +2,10 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.xml.internal.ws.client.sei.ResponseBuilder;
-import com.sun.xml.internal.ws.util.QNameMap;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
@@ -47,17 +46,46 @@ public class HttpProxy
             System.out.println("Inside handler");
             URI uri = httpExchange.getRequestURI();
             _httpUrlConnection = new URL(uri.toURL().toString()).openConnection();
-            Headers headers = httpExchange.getRequestHeaders();
-            Set<?> entrySet = headers.entrySet();
 
-            for (Iterator<?> it = entrySet.iterator(); it.hasNext();)
+
+            for(Map.Entry<String, List<String>> header: httpExchange.getRequestHeaders().entrySet())
             {
-                Map.Entry<String, List<String>> entry = (Map.Entry<String, List<String>>)it.next();
-                _httpUrlConnection.setRequestProperty(entry.getKey(), entry.getValue().get(0));
+                _httpUrlConnection.addRequestProperty(header.getKey(), header.getValue().get(0));
             }
-            _httpUrlConnection.setRequestProperty("WOW", "W");
             _httpUrlConnection.connect();
 
+
+            Object conntent = _httpUrlConnection.getContent();
+            System.out.println(conntent.getClass().toString());
+            System.out.println(_httpUrlConnection.getContentType().toString());
+
+            byte[] bytes;
+
+            try(InputStream inputStream = _httpUrlConnection.getInputStream())
+            {
+                int available = inputStream.available();
+                bytes = new byte[available];
+                while(available!=0)
+                {
+                    inputStream.read(bytes);
+                    available = inputStream.available();
+                }
+            }
+
+
+            for(Map.Entry<String, List<String>> header: _httpUrlConnection.getHeaderFields().entrySet())
+            {
+                System.out.println("Key: "+header.getKey()+" Value: "+header.getValue());
+                if(header.getKey()!=null)
+                    httpExchange.getResponseHeaders().add(header.getKey(), header.getValue().get(0));
+            }
+
+            httpExchange.sendResponseHeaders(200,-1);
+            httpExchange.getResponseBody().write(bytes);
+            try(OutputStream httpOutputStream = httpExchange.getResponseBody())
+            {
+                httpOutputStream.write(bytes);
+            }
         }
     }
 
