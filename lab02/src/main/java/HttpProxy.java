@@ -69,8 +69,6 @@ public class HttpProxy implements AutoCloseable
                     httpExchange.sendResponseHeaders(404, -1);
                     return;
                 }
-                _statistics.openFromFile(this.getClass().getName()+_port);
-                _statistics.add(uri.toString());
                 HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
                 httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
                 httpUrlConnection.setDoOutput(true);
@@ -160,6 +158,8 @@ public class HttpProxy implements AutoCloseable
                     }
                 }
 
+                _statistics.openFromFile(this.getClass().getName()+_port);
+                _statistics.add(uri.toString(), bytes.length);
 
                 //httpExchange.setAttribute("Content-Type", httpUrlConnection.getContentType());
                 httpExchange.sendResponseHeaders(response, contentLength);

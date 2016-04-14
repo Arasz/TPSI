@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -42,15 +43,23 @@ public class StatisticProvider implements AutoCloseable
 
     public void add(String pageUri)
     {
+        add(pageUri, 0);
+    }
+
+    public void add(String pageUri, long dataInBytes)
+    {
         if(_properties.containsKey(pageUri))
         {
-            long uniqueEntries = Long.parseLong((String) _properties.get(pageUri));
+           String[] values = ((String)_properties.get(pageUri)).split(",");
+            long uniqueEntries = Long.parseLong(values[0].trim());
+            long dataSent = Long.parseLong(values[1].trim());
             uniqueEntries++;
-            _properties.setProperty(pageUri, uniqueEntries + "");
+            dataSent += dataInBytes;
+            _properties.setProperty(pageUri, uniqueEntries + ", "+ dataSent);
         }
         else
         {
-            _properties.setProperty(pageUri, "1");
+            _properties.setProperty(pageUri, "1" + ", "+ dataInBytes);
         }
     }
 
@@ -71,7 +80,7 @@ public class StatisticProvider implements AutoCloseable
 
         try(OutputStream outputStream = new FileOutputStream(_propertiesFile))
         {
-            _properties.store(outputStream, "Statistics file");
+            _properties.store(outputStream, "Statistics file. \nData format: Unique entries, data sent in bytes");
         }
     }
 }
