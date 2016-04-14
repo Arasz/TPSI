@@ -5,9 +5,24 @@ import java.io.IOException;
  */
 public class MainClass
 {
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws Exception
     {
-        HttpProxy proxy = new HttpProxy(8080, 80);
+        final HttpProxy proxy = new HttpProxy(8080, 80);
         proxy.startProxy();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    proxy.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }));
     }
 }

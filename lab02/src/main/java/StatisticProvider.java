@@ -1,11 +1,7 @@
-import com.sun.jndi.toolkit.url.Uri;
-
 import java.io.*;
-import java.nio.file.FileStore;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.util.Calendar;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Created by arasz on 12.04.2016.
@@ -17,49 +13,65 @@ public class StatisticProvider implements AutoCloseable
     private File _propertiesFile;
 
 
-    public StatisticProvider(String fileName)
+    public StatisticProvider()
     {
         _properties = new Properties();
+    }
+
+    public StatisticProvider(String fileName) throws IOException
+    {
+        this();
+        openFromFile(fileName);
+    }
+
+    public void openFromFile(String fileName) throws IOException
+    {
         _propertiesFile = new File(fileName + _fileAppendix);
 
-        if(_propertiesFile.isFile() && _propertiesFile.canRead())
+        if(!_propertiesFile.exists())
+            _propertiesFile.createNewFile();
+
+        if(_propertiesFile.isFile())
         {
             try(FileInputStream inputStream = new FileInputStream(_propertiesFile))
             {
                 _properties.load(inputStream);
             }
-            catch (FileNotFoundException e)
-            {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
         }
     }
 
-    public void add(Uri pageUri)
+    public void add(String pageUri)
     {
-        String uri = pageUri.toString();
-
-        if(_properties.containsKey(uri))
+        if(_properties.containsKey(pageUri))
         {
-            long uniqueEntries = (long) _properties.get(uri);
+            long uniqueEntries = Long.parseLong((String) _properties.get(pageUri));
             uniqueEntries++;
-            _properties.setProperty(uri, uniqueEntries + "");
+            _properties.setProperty(pageUri, uniqueEntries + "");
         }
         else
         {
-            _properties.setProperty(uri, "1");
+            _properties.setProperty(pageUri, "1");
         }
+    }
+
+    public String getReadableProperties()
+    {
+        StringBuilder builder = new StringBuilder("Properties: \n");
+        Set<Map.Entry<Object,Object>> entrySet = _properties.entrySet();
+        for(Map.Entry<Object, Object> property : entrySet)
+            builder.append("[ "+ property.getKey() + " : "+property.getValue()+" ]\n");
+        return builder.toString();
     }
 
     @Override
     public void close() throws Exception
     {
+        if(_propertiesFile == null)
+            return;
+
         try(OutputStream outputStream = new FileOutputStream(_propertiesFile))
         {
-            _properties.store(outputStream, Calendar.getInstance().getTime().toString());
+            _properties.store(outputStream, "Statistics file");
         }
     }
 }
