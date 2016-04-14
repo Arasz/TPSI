@@ -91,7 +91,7 @@ public class HttpProxy
 
                 byte[] bytes = new byte[0];
 
-                if(response >= 400 && response< 500)
+                if(response >= 400 && response< 600)
                 {
 
                     try(InputStream errorStream = httpUrlConnection.getErrorStream())
