@@ -24,10 +24,13 @@ public class HttpProxy implements AutoCloseable
     int _outPort;
     HttpServer _server;
     StatisticProvider _statistics;
+    Blacklist _blacklist;
 
 
     public HttpProxy(int port, int outputPort) throws IOException
     {
+        _blacklist = new Blacklist();
+        _blacklist.loadFromFile();
         _statistics = new StatisticProvider(this.getClass().getName()+_port);
         _port = port;
         _outPort = outputPort;
@@ -60,8 +63,13 @@ public class HttpProxy implements AutoCloseable
 
             try
             {
-                _statistics.openFromFile(this.getClass().getName()+_port);
                 URI uri = httpExchange.getRequestURI();
+                if(_blacklist.isBlacklisted(uri.toString()))
+                {
+                    httpExchange.sendResponseHeaders(404, -1);
+                    return;
+                }
+                _statistics.openFromFile(this.getClass().getName()+_port);
                 _statistics.add(uri.toString());
                 HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
                 httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
