@@ -1,14 +1,9 @@
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-import com.sun.media.jfxmedia.track.Track;
-import com.sun.net.httpserver.Headers;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.xml.internal.fastinfoset.Encoder;
-import com.sun.xml.internal.fastinfoset.util.StringArray;
 import sun.misc.IOUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,12 +12,14 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.*;
 
 /**
  * Created by arasz on 08.04.2016.
  */
 public class HttpProxy
 {
+    Logger _logger;
     int _port;
     int _outPort;
     HttpServer _server;
@@ -33,6 +30,13 @@ public class HttpProxy
         _outPort = outputPort;
         _server = HttpServer.create(new InetSocketAddress(_port), 2);
         _server.createContext("/", new RootHandler());
+        _logger = Logger.getLogger("httpProxyLogger");
+        _logger.setLevel(Level.ALL);
+        Handler[] handlers =  _logger.getHandlers();
+        for(Handler handler: handlers)
+            _logger.removeHandler(handler);
+        _logger.addHandler(new FileHandler("%t/Java/HttpProxy/proxy%g.log",1000000, 5, true));
+        //_logger.addHandler(new ConsoleHandler());
     }
 
     public void startProxy()
@@ -47,83 +51,119 @@ public class HttpProxy
         public void handle(HttpExchange httpExchange) throws IOException
         {
 
-            URI uri = httpExchange.getRequestURI();
-            HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
-            httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
-            httpUrlConnection.setDoOutput(true);
-            httpUrlConnection.setDoInput(true);
-            //httpUrlConnection.setConnectTimeout(10000);
-            //httpUrlConnection.setReadTimeout(10000);
-
-            System.out.println("----> Opening connection with: "+ uri.toString());
-            System.out.println("----> Request method: " + httpUrlConnection.getRequestMethod());
-
-            for(Map.Entry<String, List<String>> header: httpExchange.getRequestHeaders().entrySet())
+            try
             {
-                String values = join(header.getValue(),", ");
-                httpUrlConnection.setRequestProperty(header.getKey(), values);
-                System.out.println("--->"+header.getKey()+" : "+values);
-            }
+                URI uri = httpExchange.getRequestURI();
+                HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
+                httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
+                httpUrlConnection.setDoOutput(true);
+                httpUrlConnection.setDoInput(true);
+                //httpUrlConnection.setConnectTimeout(10000);
+                //httpUrlConnection.setReadTimeout(10000);
 
-            try(InputStream inputStream = httpExchange.getRequestBody())
-            {
-                System.out.println("--> Request body size [bytes]: "+inputStream.available());
-                if(inputStream.available()>0)
+                _logger.info("Opening connection with: "+ uri.toString());
+                _logger.info("Request method: " + httpUrlConnection.getRequestMethod());
+
+                for(Map.Entry<String, List<String>> header: httpExchange.getRequestHeaders().entrySet())
                 {
-                    try(OutputStream outputStream = httpUrlConnection.getOutputStream())
+                    String values = join(header.getValue(),", ");
+                    httpUrlConnection.setRequestProperty(header.getKey(), values);
+                    _logger.info("Header: ["+header.getKey()+" : "+values+"]");
+                }
+
+                try(InputStream inputStream = httpExchange.getRequestBody())
+                {
+                    _logger.info("Request body size [bytes]: "+inputStream.available());
+                    if(inputStream.available()>0)
                     {
-                        outputStream.write(IOUtils.readFully(inputStream, -1, true));
+                        try(OutputStream outputStream = httpUrlConnection.getOutputStream())
+                        {
+                            outputStream.write(IOUtils.readFully(inputStream, -1, true));
+                        }
                     }
                 }
-            }
 
 
-            httpUrlConnection.connect();
+                httpUrlConnection.connect();
 
-            byte[] bytes = new byte[0];
-            try (InputStream inputStream =  httpUrlConnection.getInputStream())
-            {
-                bytes = IOUtils.readFully(inputStream, -1, true);
+                int response = httpUrlConnection.getResponseCode();
+                long contentLength= httpUrlConnection.getContentLengthLong();
+
+                byte[] bytes = new byte[0];
+
+                if(response >= 400 && response< 500)
+                {
+
+                    try(InputStream errorStream = httpUrlConnection.getErrorStream())
+                    {
+                        bytes = IOUtils.readFully(errorStream, -1, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.log(Level.SEVERE, ex.getMessage());
+                        _logger.log(Level.SEVERE, httpUrlConnection.getRequestMethod());
+                    }
+                }
+                else
+                {
+                    try (InputStream inputStream = httpUrlConnection.getInputStream())
+                    {
+                        bytes = IOUtils.readFully(inputStream, -1, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.log(Level.SEVERE, ex.getMessage());
+                        _logger.log(Level.SEVERE, httpUrlConnection.getRequestMethod());
+                    }
+                }
+
+                if(contentLength!=bytes.length)
+                {
+                    System.out.println("-------> "+uri.toString()+", "+response+", "+httpUrlConnection.getRequestMethod());
+                    System.out.println("-------> Bytes.length: "+bytes.length+", Cont-Len: "+contentLength);
+                }
+
+                for(Map.Entry<String, List<String>> header: httpUrlConnection.getHeaderFields().entrySet())
+                {
+                    if(header.getKey()!=null)
+                    {
+                        String key = header.getKey();
+                        if(key!=null)
+                        {
+                            if(key.equals("Transfer-Encoding"))
+                            {
+                                contentLength = 0;
+                                System.out.println("-------> Transfer encoding exists");
+                            }
+
+                            String values = join(header.getValue(), ", ");
+                            httpExchange.getResponseHeaders().set(key, values.substring(0, values.length()-2));
+                            _logger.info("Header: ["+header.getKey()+" : "+values+"]");
+                        }
+                    }
+                }
+
+
+                //httpExchange.setAttribute("Content-Type", httpUrlConnection.getContentType());
+                httpExchange.sendResponseHeaders(response, contentLength);
+                try(OutputStream httpOutputStream = httpExchange.getResponseBody())
+                {
+                    httpOutputStream.write(bytes);
+                }
+                catch (Exception ex)
+                {
+                    _logger.log(Level.SEVERE, ex.getMessage());
+                }
+                _logger.info("Response code: "+response + "; Content-Length: "+contentLength);
+                httpUrlConnection.disconnect();
             }
             catch (Exception ex)
             {
-                System.err.println(ex.getMessage());
-                System.err.print(httpUrlConnection.getRequestMethod());
+                System.err.println(ex.toString());
+                ex.printStackTrace();
             }
-
-            int response = httpUrlConnection.getResponseCode();
-            long contentLength= httpUrlConnection.getContentLengthLong();
-
-
-            for(Map.Entry<String, List<String>> header: httpUrlConnection.getHeaderFields().entrySet())
-            {
-                if(header.getKey()!=null)
-                {
-                    String key = header.getKey();
-                    if(key!=null)
-                    {
-                        if(key.equals("Transfer-Encoding"))
-                            contentLength = 0;
-
-                        String values = join(header.getValue(), ", ");
-                        httpExchange.getResponseHeaders().set(key, values.substring(0, values.length()-2));
-                        System.out.println("->"+header.getKey()+" : "+values);
-                    }
-                }
-            }
-
-
-            //httpExchange.setAttribute("Content-Type", httpUrlConnection.getContentType());
-            httpExchange.sendResponseHeaders(response, contentLength);
-            try(OutputStream httpOutputStream = httpExchange.getResponseBody())
-            {
-                httpOutputStream.write(bytes);
-            }
-            System.out.println(response + "; "+contentLength);
-            httpUrlConnection.disconnect();
         }
     }
-
 
     private String join(Collection<String> collection, String joint)
     {
