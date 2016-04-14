@@ -17,24 +17,24 @@ import java.util.logging.*;
 /**
  * Created by arasz on 08.04.2016.
  */
-public class HttpProxy
+public class HttpProxy implements AutoCloseable
 {
     Logger _logger;
     int _port;
     int _outPort;
     HttpServer _server;
+    StatisticProvider _statistics;
+
 
     public HttpProxy(int port, int outputPort) throws IOException
     {
+        _statistics = new StatisticProvider(this.getClass().getName()+_port);
         _port = port;
         _outPort = outputPort;
         _server = HttpServer.create(new InetSocketAddress(_port), 2);
         _server.createContext("/", new RootHandler());
         _logger = Logger.getLogger("httpProxyLogger");
-        _logger.setLevel(Level.ALL);
-        Handler[] handlers =  _logger.getHandlers();
-        for(Handler handler: handlers)
-            _logger.removeHandler(handler);
+        _logger.setLevel(Level.OFF);
         _logger.addHandler(new FileHandler("%t/Java/HttpProxy/proxy%g.log",1000000, 5, true));
         //_logger.addHandler(new ConsoleHandler());
     }
@@ -45,6 +45,13 @@ public class HttpProxy
         _server.start();
     }
 
+    @Override
+    public void close() throws Exception
+    {
+        _statistics.close();
+        _server.stop(0);
+    }
+
     class RootHandler implements HttpHandler
     {
 
@@ -53,7 +60,9 @@ public class HttpProxy
 
             try
             {
+                _statistics.openFromFile(this.getClass().getName()+_port);
                 URI uri = httpExchange.getRequestURI();
+                _statistics.add(uri.toString());
                 HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
                 httpUrlConnection.setRequestMethod(httpExchange.getRequestMethod());
                 httpUrlConnection.setDoOutput(true);
@@ -91,7 +100,7 @@ public class HttpProxy
 
                 byte[] bytes = new byte[0];
 
-                if(response >= 400 && response< 500)
+                if(response >= 400 && response< 600)
                 {
 
                     try(InputStream errorStream = httpUrlConnection.getErrorStream())
@@ -161,6 +170,16 @@ public class HttpProxy
             {
                 System.err.println(ex.toString());
                 ex.printStackTrace();
+            }
+            finally
+            {
+                try
+                {
+                    _statistics.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
