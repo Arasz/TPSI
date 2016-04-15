@@ -31,7 +31,7 @@ public class HttpProxy implements AutoCloseable
     {
         _blacklist = new Blacklist();
         _blacklist.loadFromFile();
-        _statistics = new StatisticProvider(this.getClass().getName()+_port);
+        _statistics = new StatisticProvider();
         _port = port;
         _outPort = outputPort;
         _server = HttpServer.create(new InetSocketAddress(_port), 2);
@@ -159,7 +159,7 @@ public class HttpProxy implements AutoCloseable
                 }
 
                 _statistics.openFromFile(this.getClass().getName()+_port);
-                _statistics.add(uri.toString(), bytes.length);
+                _statistics.add(uri.getHost(), bytes.length);
 
                 //httpExchange.setAttribute("Content-Type", httpUrlConnection.getContentType());
                 httpExchange.sendResponseHeaders(response, contentLength);
