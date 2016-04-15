@@ -66,7 +66,7 @@ public class HttpProxy implements AutoCloseable
                 URI uri = httpExchange.getRequestURI();
                 if(_blacklist.isBlacklisted(uri.toString()))
                 {
-                    httpExchange.sendResponseHeaders(404, -1);
+                    httpExchange.sendResponseHeaders(403, -1);
                     return;
                 }
                 HttpURLConnection httpUrlConnection = (HttpURLConnection)new URL(uri.toURL().toString()).openConnection();
