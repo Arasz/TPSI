@@ -1,0 +1,40 @@
+﻿
+    table tr th input:hover {
+        visibility: visible;
+    }
+
+    table tr th input {
+        visibility: hidden;
+    }
+
+article {
+    display: none;
+}
+
+    article:target {
+        border: 2px solid #D4D4D4;
+        background-color: #e5eecc;
+        display: block;
+    }
+
+
+.mainPage {
+    display: flex;
+    flex-flow: row;
+    color: blueviolet;
+}
+
+footer {
+    border-style: dotted;
+    border-color: black;
+    background-color: antiquewhite;
+
+}
+
+header {
+    background-color: bisque;
+}
+
+nav {
+    background-color: red;
+}

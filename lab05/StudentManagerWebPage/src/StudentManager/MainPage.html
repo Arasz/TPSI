@@ -3,48 +3,134 @@
 <head>
     <meta charset="utf-8" />
     <title>WOW students manager</title>
+    <link href="Style/MainStyleSheet.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body >
     <header>
-        <h1><img src="Assets/logo.png" alt="Doge logo" height="80" width="80" /> WOW students manager</h1>
+        <h1>
+            <img src="Assets/logo.png" alt="Doge logo" height="80" width="80" /> WOW students manager
+        </h1>
     </header>
 
-    <article>
-        <h1>List of students</h1>
-        <table border="1">
+<div class="mainPage">
+    <nav>
+        <a href="#students">List of students</a><br />
+        <a href="#grades">List of grades</a><br />
+        <a href="#subjects"> List of subjects</a><br />
+    </nav>
+
+    <article id="students">
+        <h2>List of students</h2>
+        <table>
             <tr>
-                <th>Id</th>
-                <th>First name</th>
-                <th>Last name</th>
-                <th>Birthday</th>
+                <th>
+                    Id
+                    <input type="number" min="0" max="65535" id="studentById" />
+                    <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                </th>
+                <th>First name <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Last name <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Birthday <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
                 <th>Action</th>
             </tr>
             <tr>
-                <td><input type="number" value="1222" /></td>
-                <td><input type="text" value="Bogdan" /></td>
-                <td><input type="text" value="Kowalski" /></td>
-                <td><input type="date" value="2002-12-11" /></td>
+                <td><input type="number" value="1222" readonly="readonly" /></td>
+                <td><input type="text" placeholder="Name" value="Bogdan" required /></td>
+                <td><input type="text" placeholder="Surname" value="Kowalski" required /></td>
+                <td><input type="date" value="2002-12-11" required /></td>
                 <td>
                     <p>
                         <button>See grades</button>
                         <button>Delete</button>
+                        <button>Add</button>
                     </p>
                 </td>
             </tr>
             <tr>
-                <td><input type="number" value="1222" /></td>
-                <td><input type="text" value="Bogdan" /></td>
-                <td><input type="text" value="Kowalski" /></td>
-                <td><input type="date" value="2002-12-11" /></td>
+                <td><input type="number" value="1333" readonly="readonly" /></td>
+                <td><input type="text" placeholder="Name" required /></td>
+                <td><input type="text" placeholder="Surname" required /></td>
+                <td><input type="date" required /></td>
                 <td>
                     <p>
                         <button>See grades</button>
                         <button>Delete</button>
+                        <button>Add</button>
                     </p>
                 </td>
             </tr>
         </table>
     </article>
+
+    <article id="grades">
+        <h2>List of grades</h2>
+        <table>
+            <tr>
+                <th>Student <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Grades <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Date <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Student name" value="Bogdan Kowalski" required /></td>
+                <td><input type="text" placeholder="Student grades" value="5, 4, 3" required /></td>
+                <td><input type="date" value="2002-12-11" required /></td>
+                <td>
+                    <p>
+                        <button>See student</button>
+                        <button>Delete</button>
+                        <button>Add</button>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Student name" required /></td>
+                <td><input type="text" placeholder="Student grades" required /></td>
+                <td><input type="date" required /></td>
+                <td>
+                    <p>
+                        <button>See student</button>
+                        <button>Delete</button>
+                        <button>Add</button>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </article>
+
+    <article id="subjects">
+        <h2>List of subjects</h2>
+        <table>
+            <tr>
+                <th>Subject <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Teacher <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td><input type="text" value="Wf" required /></td>
+                <td><input type="text" value="Andrzej Kowalski" required /></td>
+                <td>
+                    <p>
+                        <button>See grades</button>
+                        <button>Delete</button>
+                        <button>Add</button>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Subject" required /></td>
+                <td><input type="text" placeholder="Teacher name" required /></td>
+                <td>
+                    <p>
+                        <button>See grades</button>
+                        <button>Delete</button>
+                        <button>Add</button>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </article>
+</div>
 
     <footer>
         <p>Author: Rafał Araszkiewicz </p>
