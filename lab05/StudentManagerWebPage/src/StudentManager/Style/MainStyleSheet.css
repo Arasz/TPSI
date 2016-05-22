@@ -33,7 +33,7 @@ div.mainPage {
 
 footer {
     border-top: 1px solid #FF7E20;
-    background-color: #FFE320;
+    background: linear-gradient( 45deg, #FFE320, #FF7E20);
     position: absolute;
     bottom: 0;
     left: 0;
