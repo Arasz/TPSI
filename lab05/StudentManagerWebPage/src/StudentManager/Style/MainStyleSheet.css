@@ -75,9 +75,10 @@ table {
     border-collapse: collapse;
 }
 
-    table tr th {
+    table  th {
         background: #FFBA2C;
         text-align: left;
+        font-size: small;
     }
 
     table th img {
@@ -86,7 +87,7 @@ table {
     }
 
     table th input {
-        height: 20px;
+        height: 10px;
         width: 65%;
         border: none;
         background: inherit;
@@ -101,9 +102,7 @@ table {
         visibility: visible;
     }
 
-{
-    visibility: visible;
-}
+
 
 table tr {
     background: #E8BA1D;
@@ -116,6 +115,7 @@ table tr {
         background: inherit;
         color: black;
         font: inherit;
+        font-size: small;
         text-align: center;
         vertical-align: baseline;
     }
@@ -130,4 +130,56 @@ tr:nth-child(odd) {
 
 table, th, td {
     border: 1px solid white;
+}
+
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    header,
+    nav,
+    footer {
+        display: none;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    article table tr:last-child {
+        display: none;
+    }
+
+    article table tr th:last-child {
+        display: none;
+    }
+
+    article table tr td:last-child {
+        display: none;
+    }
+
+    article table th img {
+        display: none;
+    }
+
+
+
+        article table tr th input {
+            display: none;
+        }
+
+        article table tr td {
+            background: white;
+        }
+
+            article table tr td input {
+                text-align: left;
+            }
+
+    article table tr th {
+        color: black;
+        background: white;
+    }
 }

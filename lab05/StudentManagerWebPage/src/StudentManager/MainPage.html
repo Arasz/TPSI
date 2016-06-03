@@ -80,9 +80,21 @@
             <h2>List of grades</h2>
             <table>
                 <tr>
-                    <th>Student <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
-                    <th>Grades <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
-                    <th>Date <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                    <th>
+                        Student
+                        <input type="text" id="gradeByStudentName" />
+                        <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                    </th>
+                    <th>
+                        Grade
+                        <input type="number" min="2" max="5" id="gradesByGrades" />
+                        <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                    </th>
+                    <th>
+                        Date
+                        <input type="date" id="gradeByDate" />
+                        <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                    </th>
                     <th>Action</th>
                 </tr>
                 <tr>
@@ -116,8 +128,16 @@
             <h2>List of subjects</h2>
             <table>
                 <tr>
-                    <th>Subject <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
-                    <th>Teacher <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" /></th>
+                    <th>
+                        Subject
+                        <input type="text" id="subjectBySubjectName" />
+                        <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                    </th>
+                    <th>
+                        Teacher
+                        <input type="text" id="subjectByTeacher" />
+                        <img src="Assets/200px-magnifying_glass_icon.png" height="15" width="15" alt="search" />
+                    </th>
                     <th>Action</th>
                 </tr>
                 <tr>
