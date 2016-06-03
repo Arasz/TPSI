@@ -6,10 +6,14 @@
         display: block;
     }
 
+body {
+    display: flex;
+    flex-flow: column wrap;
+}
+
 div.mainPage {
     display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     align-items: flex-start;
 }
 
@@ -34,10 +38,9 @@ div.mainPage {
 footer {
     border-top: 1px solid #FF7E20;
     background: linear-gradient( 45deg, #FFE320, #FF7E20);
-    position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
+    flex: auto;
+    align-self: flex-end;
 }
 
     footer p {
@@ -50,7 +53,6 @@ header {
     justify-content: flex-start;
     background-color: #FFBA2C;
     border-bottom: 1px solid #FF7E20;
-    flex-align: baseline;
 }
 
     header img {
@@ -67,62 +69,69 @@ nav {
     background-color: #FFBA2C;
 }
 
-    nav a {
-        color: #000;
+a {
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
     }
+
+nav a {
+    color: #000;
+}
 
 table {
     border-collapse: collapse;
 }
 
-    table  th {
+    table th {
         background: #FFBA2C;
         text-align: left;
         font-size: small;
+        font-family: sans-serif;
     }
 
-    table th img {
-        height: 15px;
-        width: 15px;
+        table th img {
+            height: 15px;
+            width: 15px;
+        }
+
+        table th input {
+            height: 10px;
+            width: 65%;
+            border: none;
+            background: inherit;
+            color: black;
+            font: inherit;
+            text-align: center;
+            vertical-align: baseline;
+            visibility: collapse;
+        }
+
+        table th:hover input {
+            visibility: visible;
+        }
+
+    table tr {
+        background: #E8BA1D;
     }
 
-    table th input {
-        height: 10px;
-        width: 65%;
-        border: none;
-        background: inherit;
-        color: black;
-        font: inherit;
-        text-align: center;
-        vertical-align: baseline;
-        visibility: collapse;
-    }
+        table tr td input {
+            height: 20px;
+            width: 100%;
+            border: none;
+            background: inherit;
+            color: black;
+            font: inherit;
+            font-size: small;
+            text-align: center;
+            vertical-align: baseline;
+        }
 
-    table th:hover input {
-        visibility: visible;
-    }
-
-
-
-table tr {
-    background: #E8BA1D;
-}
-
-    table tr td input {
-        height: 20px;
-        width: 100%;
-        border: none;
-        background: inherit;
-        color: black;
-        font: inherit;
-        font-size: small;
-        text-align: center;
-        vertical-align: baseline;
-    }
-
-    table tr:hover {
-        background: #FFE320;
-    }
+        table tr:hover {
+            background: #FFE320;
+        }
 
 tr:nth-child(odd) {
     background: #FF7E20;
@@ -144,8 +153,13 @@ table, th, td {
         display: none;
     }
 
-    table {
-        border-collapse: collapse;
+    table tr {
+        border-bottom-width: 2px;
+        border-bottom-style: solid;
+        border-bottom-color: black;
+        border-top-width: 2px;
+        border-top-style: solid;
+        border-top-color: black;
     }
 
     article table tr:last-child {
@@ -164,19 +178,17 @@ table, th, td {
         display: none;
     }
 
+    article table tr th input {
+        display: none;
+    }
 
+    article table tr td {
+        background: white;
+    }
 
-        article table tr th input {
-            display: none;
+        article table tr td input {
+            text-align: left;
         }
-
-        article table tr td {
-            background: white;
-        }
-
-            article table tr td input {
-                text-align: left;
-            }
 
     article table tr th {
         color: black;
