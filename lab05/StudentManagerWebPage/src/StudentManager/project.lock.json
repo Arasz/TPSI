@@ -3,6 +3,18 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -561,6 +573,18 @@
       }
     },
     "DNXCore,Version=v5.0": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -1724,6 +1748,18 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -2285,6 +2321,18 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -2846,6 +2894,18 @@
       }
     },
     "DNXCore,Version=v5.0/win7-x86": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -4431,6 +4491,18 @@
       }
     },
     "DNXCore,Version=v5.0/win7-x64": {
+      "jQuery/2.2.3": {
+        "type": "package"
+      },
+      "Knockout.Mapping/2.4.0": {
+        "type": "package",
+        "dependencies": {
+          "knockoutjs": "2.0.0"
+        }
+      },
+      "knockoutjs/3.4.0": {
+        "type": "package"
+      },
       "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -6017,6 +6089,45 @@
     }
   },
   "libraries": {
+    "jQuery/2.2.3": {
+      "type": "package",
+      "sha512": "VCYHFjLUxDqCUHPd3SxDfZgoMlQ6JIbZ277KbTbKtruQaKdtK8/s1WUuZnMYgxSUFxwsMxxHavDYuyHt4axsJg==",
+      "files": [
+        "Content/Scripts/jquery-2.2.3.js",
+        "Content/Scripts/jquery-2.2.3.min.js",
+        "Content/Scripts/jquery-2.2.3.min.map",
+        "Content/Scripts/jquery-2.2.3-vsdoc.js",
+        "jQuery.2.2.3.nupkg",
+        "jQuery.2.2.3.nupkg.sha512",
+        "jQuery.nuspec",
+        "Tools/common.ps1",
+        "Tools/install.ps1",
+        "Tools/jquery-2.2.3.intellisense.js",
+        "Tools/uninstall.ps1"
+      ]
+    },
+    "Knockout.Mapping/2.4.0": {
+      "type": "package",
+      "sha512": "vbnl7utmdtveWZXWZLsWeNjmhy31E1ImV3BorzjzMZaZ9DcFn0feydgdGTW9Iv9Z+bQk98Kl/+zFyJ+/xLo3hA==",
+      "files": [
+        "Content/scripts/knockout.mapping-latest.debug.js",
+        "Content/scripts/knockout.mapping-latest.js",
+        "Knockout.Mapping.2.4.0.nupkg",
+        "Knockout.Mapping.2.4.0.nupkg.sha512",
+        "Knockout.Mapping.nuspec"
+      ]
+    },
+    "knockoutjs/3.4.0": {
+      "type": "package",
+      "sha512": "EyKTVOLETjNb+bn8RvOPMY/vxMQKPHi77LA5rT/frZf5139YjaAkbcK56Wxhmg5lpa5eVVY/wy83ExjnYXtVQA==",
+      "files": [
+        "Content/Scripts/knockout-3.4.0.debug.js",
+        "Content/Scripts/knockout-3.4.0.js",
+        "knockoutjs.3.4.0.nupkg",
+        "knockoutjs.3.4.0.nupkg.sha512",
+        "knockoutjs.nuspec"
+      ]
+    },
     "Microsoft.AspNet.FileProviders.Abstractions/1.0.0-rc1-final": {
       "type": "package",
       "serviceable": true,
@@ -9279,6 +9390,9 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "jQuery >= 2.2.3",
+      "Knockout.Mapping >= 2.4.0",
+      "knockoutjs >= 3.4.0",
       "Microsoft.AspNet.IISPlatformHandler >= 1.0.0-rc1-final",
       "Microsoft.AspNet.Server.Kestrel >= 1.0.0-rc1-final"
     ],

@@ -1,10 +1,13 @@
-﻿{
+{
   "version": "1.0.0-*",
   "compilationOptions": {
     "emitEntryPoint": true
   },
 
   "dependencies": {
+    "jQuery": "2.2.3",
+    "Knockout.Mapping": "2.4.0",
+    "knockoutjs": "3.4.0",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final"
   },

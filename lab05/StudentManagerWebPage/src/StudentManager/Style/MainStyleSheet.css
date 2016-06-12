@@ -81,6 +81,7 @@ nav a {
     color: #000;
 }
 
+/* TABLE STYLING*/
 table {
     border-collapse: collapse;
 }
@@ -90,16 +91,18 @@ table {
         text-align: left;
         font-size: small;
         font-family: sans-serif;
+        width: auto;
     }
 
         table th img {
             height: 15px;
             width: 15px;
+            content: url(../Assets/200px-magnifying_glass_icon.png);
         }
 
         table th input {
             height: 10px;
-            width: 65%;
+            width: 60%;
             border: none;
             background: inherit;
             color: black;
@@ -140,6 +143,8 @@ tr:nth-child(odd) {
 table, th, td {
     border: 1px solid white;
 }
+
+/*PRINT*/
 
 @media print {
     body {
