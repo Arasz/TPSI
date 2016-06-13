@@ -97,7 +97,7 @@ table {
         table th img {
             height: 15px;
             width: 15px;
-            content: url(../Assets/200px-magnifying_glass_icon.png);
+            content: url(../assets/200px-magnifying_glass_icon.png);
         }
 
         table th input {
