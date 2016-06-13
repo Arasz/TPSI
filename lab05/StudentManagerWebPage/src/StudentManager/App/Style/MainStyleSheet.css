@@ -132,6 +132,12 @@ table {
             vertical-align: baseline;
         }
 
+        table tr td p button {
+            margin: auto;
+            display: block;
+            width: 100px;
+        }
+
         table tr:hover {
             background: #FFE320;
         }
