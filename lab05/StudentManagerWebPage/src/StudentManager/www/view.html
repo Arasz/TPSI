@@ -97,7 +97,7 @@
         </article>
 
         <article id="subjects">
-            <h2>List of subjects (<span data-bind="text: subjects.length"></span>)</h2>
+            <h2>List of subjects (<span data-bind="text: remoteSubjects.length"></span>)</h2>
             <table>
                 <tr>
                     <th>Student<input type="text" data-bind="value: searchSubject" id="subjectBySubjectName" /><img alt="search" /></th>
@@ -116,12 +116,12 @@
                         </td>
                     </tr>
                 </tbody>
-                <tr>
-                    <td><input type="text" placeholder="Subject" required /></td>
-                    <td><input type="text" placeholder="Teacher" required /></td>
+                <tr data-bind="with: subject">
+                    <td><input data-bind="value: name" type="text" placeholder="Subject" required /></td>
+                    <td><input data-bind="value: teacher" type="text" placeholder="Teacher" required /></td>
                     <td>
                         <p>
-                            <button>Add</button>
+                            <button data-bind="click: addSubject">Add</button>
                         </p>
                     </td>
                 </tr>

@@ -1,21 +1,37 @@
 ﻿"use strict;"
 
 function remoteObservableCollection(baseUrl, collectionUrl) {
-    var self = ko.observableArray();
+    var self = this;
+
+    self.observableArray = ko.observableArray();
 
     self.url = baseUrl + collectionUrl;
 
-    this.getFromRemote = function () {
+    self.add = function (item) {
+        $.ajax(self.url, {
+            data: ko.toJSON(item),
+            type: "post", contentType: "application/json",
+            success: function (result) {
+                console.log(result);
+                self.observableArray.push(item);
+            }
+        });
+    }
+
+    self.getFromRemote = function () {
         $.getJSON(self.url, function (data) {
             console.log(data);
             var mapped = $.map(data, function (item) {
-                var mappedItem = ko.mapping.fromJS(item);
-                self.push(mappedItem);
-                return mappedItem;
+                return ko.mapping.fromJS(item);
             });
+            self.observableArray(mapped);
             console.log(mapped);
         });
     }
+
+    self.length = ko.computed(function () {
+        return self.observableArray().length;
+    });
 }
 
 function mainViewModel() {
@@ -106,7 +122,14 @@ function mainViewModel() {
     self.searchSubject = ko.observable();
     self.searchTeacher = ko.observable();
 
-    self.subjects = new remoteObservableCollection(baseAddress, "subjects");
+    self.remoteSubjects = new remoteObservableCollection(baseAddress, "subjects");
+
+    self.subjects = remoteSubjects.observableArray;
+
+    self.subject = {
+        name: ko.observable(),
+        teacher: ko.observable(),
+    }
 
     //Behavior
 
@@ -116,7 +139,10 @@ function mainViewModel() {
     }
 
     self.addSubject = function () {
-        self.subjects.push(new Subject("", ""));
+        var data = ko.mapping.toJS(self.subject);
+        self.remoteSubjects.add(data);
+        self.subject.name("");
+        self.subject.teacher("");
     }
 
     self.deleteSubject = function (Subject) {
@@ -124,7 +150,7 @@ function mainViewModel() {
     }
 
     self.getSubjects = function () {
-        subjects.getFromRemote();
+        remoteSubjects.getFromRemote();
     }
 
     // Client-side routes
