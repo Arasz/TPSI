@@ -1,15 +1,18 @@
 ﻿"use strict;"
 
 function remoteObservableCollection(baseUrl, collectionUrl) {
-    this.self = ko.observableArray;
+    var self = ko.observableArray();
 
     self.url = baseUrl + collectionUrl;
 
-    self.getFromRemote = function () {
-        $.getJSON(url, function (data) {
+    this.getFromRemote = function () {
+        $.getJSON(self.url, function (data) {
             console.log(data);
-            var mapped = $.map(data, function (item) { return ko.mapping.fromJS(item); });
-            self(mapped);
+            var mapped = $.map(data, function (item) {
+                var mappedItem = ko.mapping.fromJS(item);
+                self.push(mappedItem);
+                return mappedItem;
+            });
             console.log(mapped);
         });
     }
@@ -103,11 +106,11 @@ function mainViewModel() {
     self.searchSubject = ko.observable();
     self.searchTeacher = ko.observable();
 
-    self.subjects = ko.observableArray([]);
+    self.subjects = new remoteObservableCollection(baseAddress, "subjects");
 
     //Behavior
 
-    self.goToSubjects = function (subjects) {
+    self.goToSubjects = function () {
         location.hash = "subjects";
         return true;
     }
@@ -121,9 +124,7 @@ function mainViewModel() {
     }
 
     self.getSubjects = function () {
-        $.getJSON(baseAddress + "subjects", function (allData) {
-            self.collectionMapLogic(allData, self.subjects);
-        });
+        subjects.getFromRemote();
     }
 
     // Client-side routes
