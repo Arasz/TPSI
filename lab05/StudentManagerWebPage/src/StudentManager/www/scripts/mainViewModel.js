@@ -28,9 +28,8 @@ window.onload = function () {
 
         //Behavior
 
-        self.goToStudents = function (students) {
-            console.log(students);
-            location.hash = students;
+        self.goToStudents = function (students, event) {
+            location.hash = "students";
             return true;
         }
 
@@ -66,7 +65,7 @@ window.onload = function () {
 
         //Behavior
         self.goToMarks = function (marks) {
-            location.hash = marks;
+            location.hash = "marks";
             return true;
         }
 
@@ -95,7 +94,7 @@ window.onload = function () {
         //Behavior
 
         self.goToSubjects = function (subjects) {
-            location.hash = subjects;
+            location.hash = "subjects";
             return true;
         }
 
@@ -115,19 +114,10 @@ window.onload = function () {
 
         // Client-side routes
         Sammy(function () {
-            this.get('#:students', function () {
-                self.chosenTableHash(this.params.students);
-                self.getStudents();
-            });
-
-            this.get('#:marks', function () {
-                self.chosenTableHash(this.params.marks);
-                self.getMarks();
-            });
-
-            this.get('#:subjects', function () {
-                self.chosenTableHash(this.params.subjects);
-                self.getSubjects();
+            this.get('#:name', function () {
+                self.chosenTableHash(this.params.name);
+                var name = "get" + this.params.name[0].toUpperCase() + this.params.name.slice(1);
+                self[name].call(self);
             });
 
             this.get('', function () { this.app.runRoute('get', '#students') });
