@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WOW students manager</title>
+    <link href="Style/MainStyleSheet.css" rel="stylesheet" type="text/css" />
+    <meta name="viewport" content="width=320, initial-scale=1">
+    <script type="text/javascript" src="scripts/dependencies/knockout.js"></script>
+    <script type="text/javascript" src="scripts/dependencies/knockout.mapping.js"></script>
+    <script type="text/javascript" src="scripts/dependencies/jquery.js"></script>
+    <script type="text/javascript" src="scripts/mainViewModel.js"></script>
+</head>
+<body>
+
+    <header>
+        <img alt="Doge logo" height="100" src="Assets/logo.png" width="100" />
+        <h1>WOW students manager</h1>
+    </header>
+
+    <div class="mainPage">
+        <nav>
+            <dl>
+                <dt> <a href="#students">List of students</a> </dt>
+                <dt> <a href="#grades">List of grades</a> </dt>
+                <dt> <a href="#subjects"> List of subjects</a> </dt>
+            </dl>
+        </nav>
+
+        <article id="students">
+            <h2>List of students (<span data-bind="text: students().length"></span>)</h2>
+            <table>
+                <tr>
+                    <th>Id<input type="number" min="0" max="65535" data-bind="value: searchId" id="studentById" /> <img alt="search" /></th>
+                    <th>First name <input type="text" data-bind="value: searchName" id="studentByName" /><img alt="search" /></th>
+                    <th>Last name <input type="text" id="studentByLastName" data-bind="value: searchLastName" /><img alt="search" /></th>
+                    <th>Birthday <input type="date" id="studentByBirthday" data-bind="value: searchBirthday" /><img alt="search" /></th>
+                    <th>Action</th>
+                </tr>
+                <tbody data-bind="foreach: students">
+                    <tr>
+                        <td><input type="number" placeholder="Id" data-bind="value: id" readonly="readonly" /></td>
+                        <td><input type="text" placeholder="Name" data-bind="value: firstName" required /></td>
+                        <td><input type="text" placeholder="Surname" data-bind="value: lastName" required /></td>
+                        <td><input type="date" data-bind="value: birthday" required /></td>
+                        <td>
+                            <p>
+                                <button>See grades</button>
+                                <button data-bind="click: deleteStudent">Delete</button>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td><input type="number" placeholder="Id" readonly="readonly" /></td>
+                    <td><input type="text" placeholder="Name" required /></td>
+                    <td><input type="text" placeholder="Surname" required /></td>
+                    <td><input type="date" required /></td>
+                    <td>
+                        <p>
+                            <button data-bind="click: addStudent">Add</button>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </article>
+
+        <article id="grades">
+            <h2>List of grades  (<span data-bind="text: marks().length"></span>)</h2>
+            <table>
+                <tr>
+                    <th>Student<input type="text" data-bind="value: searchName" id="gradeByStudentName" /><img alt="search" /></th>
+                    <th>Grades <input type="text" data-bind="value: searchMark" id="marksByValue" /><img alt="search" /></th>
+                    <th>Date <input type="date" data-bind="value: searchDate" id="gradeBySubmitDate" /><img alt="search" /></th>
+                    <th>Action</th>
+                </tr>
+                <tbody data-bind="foreach: marks">
+                    <tr>
+                        <td><input type="text" placeholder="Student id" data-bind="value: studentId" required /></td>
+                        <td><input type="text" placeholder="Student mark" data-bind="value: value" required /></td>
+                        <td><input type="date" data-bind="value: submitDate" required /></td>
+                        <td>
+                            <p>
+                                <button>See student</button>
+                                <button data-bind="click: deleteMark">Delete</button>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td><input type="text" placeholder="Student id" required /></td>
+                    <td><input type="text" placeholder="Student mark" required /></td>
+                    <td><input type="date" required /></td>
+                    <td> <p> <button data-bind="click: addMark">Add</button> </p></td>
+                </tr>
+            </table>
+        </article>
+
+        <article id="subjects">
+            <h2>List of subjects (<span data-bind="text: subjects().length"></span>)</h2>
+            <table>
+                <tr>
+                    <th>Student<input type="text" data-bind="value: searchSubject" id="subjectBySubjectName" /><img alt="search" /></th>
+                    <th>Grades <input type="text" data-bind="value: searchTeacher" id="subjectByTeacher" /><img alt="search" /></th>
+                    <th>Action</th>
+                </tr>
+                <tbody data-bind="foreach: subjects">
+                    <tr>
+                        <td><input type="text" placeholder="Subject" data-bind="value: subjectName" required /></td>
+                        <td><input type="text" placeholder="Teacher" data-bind="value: teacher" required /></td>
+                        <td>
+                            <p>
+                                <button>See grades</button>
+                                <button data-bind="click: deleteSubject">Delete</button>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td><input type="text" placeholder="Subject" required /></td>
+                    <td><input type="text" placeholder="Teacher" required /></td>
+                    <td> <p> <button data-bind="click: addSubject">Add</button> </p></td>
+                </tr>
+            </table>
+        </article>
+    </div>
+
+    <footer>
+        <p>
+            Author: Rafał Araszkiewicz <br />
+            Conntact info: <a href="mailto:exapmle@gmail.com">Conntact address</a> <br />
+            University page: <a href="http://www.put.poznan.pl/" accesskey="p">http://www.put.poznan.pl/</a> <br />
+        </p>
+    </footer>
+</body>
+</html>
