@@ -1,128 +1,145 @@
 ﻿"use strict;"
 
-window.onload = function () {
-    function mainViewModel() {
-        this.self = this;
+function remoteObservableCollection(baseUrl, collectionUrl) {
+    this.self = ko.observableArray;
 
-        self.baseAddress = "http://localhost:60732/api/";
+    self.url = baseUrl + collectionUrl;
 
-        self.collectionMapLogic = function (data, collection) {
+    self.getFromRemote = function () {
+        $.getJSON(url, function (data) {
             console.log(data);
             var mapped = $.map(data, function (item) { return ko.mapping.fromJS(item); });
-            collection(mapped);
+            self(mapped);
             console.log(mapped);
-        }
+        });
+    }
+}
 
-        self.chosenTableHash = ko.observable();
+function mainViewModel() {
+    this.self = this;
 
-        // Students
+    self.baseAddress = "http://localhost:60732/api/";
 
-        //Data
+    self.collectionMapLogic = function (data, collection) {
+        console.log(data);
+        var mapped = $.map(data, function (item) { return ko.mapping.fromJS(item); });
+        collection(mapped);
+        console.log(mapped);
+    }
 
-        self.searchId = ko.observable();
-        self.searchName = ko.observable();
-        self.searchLastName = ko.observable();
-        self.searchBirthday = ko.observable();
+    self.chosenTableHash = ko.observable();
 
-        self.students = ko.observableArray([]);
+    // Students
 
-        //Behavior
+    //Data
 
-        self.goToStudents = function (students, event) {
-            location.hash = "students";
-            return true;
-        }
+    self.searchId = ko.observable();
+    self.searchName = ko.observable();
+    self.searchLastName = ko.observable();
+    self.searchBirthday = ko.observable();
 
-        self.addStudent = function () {
-            self.students.push(new Student(self.lastIndex() + 1, "", "", ""));
-        }
+    self.students = ko.observableArray([]);
 
-        self.deleteStudent = function (Student) {
-            self.students.remove(Student);
-        }
+    //Behavior
 
-        self.lastIndex = function () {
-            var underlyingArray = students();
-            var length = underlyingArray.length;
-            if (length === 0) return 0;
-            return underlyingArray[length - 1].id;
-        };
+    self.goToStudents = function (students, event) {
+        location.hash = "students";
+        return true;
+    }
 
-        self.getStudents = function () {
-            $.getJSON(baseAddress + "students", function (allData) {
-                self.collectionMapLogic(allData, self.students);
-            });
-        }
+    self.addStudent = function () {
+        self.students.push(new Student(self.lastIndex() + 1, "", "", ""));
+    }
 
-        //Marks
+    self.deleteStudent = function (Student) {
+        self.students.remove(Student);
+    }
 
-        //Data
-
-        self.searchMark = ko.observable();
-        self.searchDate = ko.observable();
-
-        self.marks = ko.observableArray([]);
-
-        //Behavior
-        self.goToMarks = function (marks) {
-            location.hash = "marks";
-            return true;
-        }
-
-        self.addMark = function () {
-            self.marks.push(new Mark(0, "", ""));
-        }
-
-        self.deleteMark = function (Mark) {
-            self.marks.remove(Mark);
-        }
-        self.getMarks = function () {
-            $.getJSON(baseAddress + "marks", function (allData) {
-                self.collectionMapLogic(allData, self.marks);
-            });
-        }
-
-        //Subjects
-
-        //Data
-
-        self.searchSubject = ko.observable();
-        self.searchTeacher = ko.observable();
-
-        self.subjects = ko.observableArray([]);
-
-        //Behavior
-
-        self.goToSubjects = function (subjects) {
-            location.hash = "subjects";
-            return true;
-        }
-
-        self.addSubject = function () {
-            self.subjects.push(new Subject("", ""));
-        }
-
-        self.deleteSubject = function (Subject) {
-            self.subjects.remove(Subject);
-        }
-
-        self.getSubjects = function () {
-            $.getJSON(baseAddress + "subjects", function (allData) {
-                self.collectionMapLogic(allData, self.subjects);
-            });
-        }
-
-        // Client-side routes
-        Sammy(function () {
-            this.get('#:name', function () {
-                self.chosenTableHash(this.params.name);
-                var name = "get" + this.params.name[0].toUpperCase() + this.params.name.slice(1);
-                self[name].call(self);
-            });
-
-            this.get('', function () { this.app.runRoute('get', '#students') });
-        }).run();
+    self.lastIndex = function () {
+        var underlyingArray = students();
+        var length = underlyingArray.length;
+        if (length === 0) return 0;
+        return underlyingArray[length - 1].id;
     };
 
-    ko.applyBindings(new mainViewModel());
-}
+    self.getStudents = function () {
+        $.getJSON(baseAddress + "students", function (allData) {
+            self.collectionMapLogic(allData, self.students);
+        });
+    }
+
+    //Marks
+
+    //Data
+
+    self.searchMark = ko.observable();
+    self.searchDate = ko.observable();
+
+    self.marks = ko.observableArray([]);
+
+    //Behavior
+    self.goToMarks = function (marks) {
+        location.hash = "marks";
+        return true;
+    }
+
+    self.addMark = function () {
+        self.marks.push(new Mark(0, "", ""));
+    }
+
+    self.deleteMark = function (Mark) {
+        self.marks.remove(Mark);
+    }
+    self.getMarks = function () {
+        $.getJSON(baseAddress + "marks", function (allData) {
+            self.collectionMapLogic(allData, self.marks);
+        });
+    }
+
+    //Subjects
+
+    //Data
+
+    self.searchSubject = ko.observable();
+    self.searchTeacher = ko.observable();
+
+    self.subjects = ko.observableArray([]);
+
+    //Behavior
+
+    self.goToSubjects = function (subjects) {
+        location.hash = "subjects";
+        return true;
+    }
+
+    self.addSubject = function () {
+        self.subjects.push(new Subject("", ""));
+    }
+
+    self.deleteSubject = function (Subject) {
+        self.subjects.remove(Subject);
+    }
+
+    self.getSubjects = function () {
+        $.getJSON(baseAddress + "subjects", function (allData) {
+            self.collectionMapLogic(allData, self.subjects);
+        });
+    }
+
+    // Client-side routes
+    Sammy(function () {
+        this.get('#:name', function () {
+            self.chosenTableHash(this.params.name);
+            var name = "get" + this.params.name[0].toUpperCase() + this.params.name.slice(1);
+            self[name].call(self);
+        });
+
+        this.get('', function () { this.app.runRoute('get', '#students') });
+    }).run();
+};
+
+var viewModel = new mainViewModel();
+
+$(document).ready(function () {
+    ko.applyBindings(viewModel);
+});

@@ -133,9 +133,12 @@ table {
         }
 
         table tr td p button {
-            margin: auto;
-            display: block;
             width: 100px;
+            display: block;
+            color: black;
+            background-color: inherit;
+            margin: 2px;
+            border: 1px solid black;
         }
 
         table tr:hover {
