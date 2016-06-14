@@ -28,7 +28,7 @@
         </nav>
 
         <article id="students">
-            <h2>List of students (<span data-bind="text: students().length"></span>)</h2>
+            <h2>List of students (<span data-bind="text: remoteStudents.length"></span>)</h2>
             <table>
                 <tr>
                     <th>Id<input type="number" min="0" max="65535" data-bind="value: searchId" id="studentById" /> <img alt="search" /></th>
@@ -51,11 +51,11 @@
                         </td>
                     </tr>
                 </tbody>
-                <tr>
-                    <td><input type="number" placeholder="Id" readonly="readonly" /></td>
-                    <td><input type="text" placeholder="Name" required /></td>
-                    <td><input type="text" placeholder="Surname" required /></td>
-                    <td><input type="date" required /></td>
+                <tr data-bind="with: student">
+                    <td><input type="number" data-bind="value: id" placeholder="Id" readonly="readonly" /></td>
+                    <td><input type="text" data-bind="value: name" placeholder="Name" required /></td>
+                    <td><input type="text" data-bind="value: surname" placeholder="Surname" required /></td>
+                    <td><input type="date" data-bind="value: birthday" required /></td>
                     <td>
                         <p>
                             <button data-bind="click: addStudent">Add</button>
@@ -66,7 +66,7 @@
         </article>
 
         <article id="marks">
-            <h2>List of marks  (<span data-bind="text: marks().length"></span>)</h2>
+            <h2>List of marks  (<span data-bind="text: remoteMarks.length"></span>)</h2>
             <table>
                 <tr>
                     <th>Student id<input type="text" data-bind="value: searchName" id="gradeByStudentName" /><img alt="search" /></th>
@@ -87,10 +87,10 @@
                         </td>
                     </tr>
                 </tbody>
-                <tr>
-                    <td><input type="text" placeholder="Student id" required /></td>
-                    <td><input type="text" placeholder="Student mark" required /></td>
-                    <td><input type="date" required /></td>
+                <tr data-bind="with: mark">
+                    <td><input type="text" data-bind="value: studentId" placeholder="Student id" required /></td>
+                    <td><input type="text" data-bind="value: value" placeholder="Student mark" required /></td>
+                    <td><input type="date" data-bind="value: submitTime" required /></td>
                     <td> <p> <button data-bind="click: addMark">Add</button> </p></td>
                 </tr>
             </table>

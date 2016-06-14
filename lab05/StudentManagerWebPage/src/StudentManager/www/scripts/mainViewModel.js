@@ -10,10 +10,33 @@ function remoteObservableCollection(baseUrl, collectionUrl) {
     self.add = function (item) {
         $.ajax(self.url, {
             data: ko.toJSON(item),
-            type: "post", contentType: "application/json",
+            type: "post",
+            contentType: "application/json",
             success: function (result) {
                 console.log(result);
                 self.observableArray.push(item);
+            }
+        });
+    }
+
+    self.remove = function (item) {
+        $.ajax(self.url + "/" + item.id, {
+            type: "delete",
+            success: function (result) {
+                console.log(result);
+                self.observableArray.remove(item);
+            }
+        });
+    }
+
+    self.update = function (item) {
+        $.ajax(self.url + "/" + item.id, {
+            data: ko.toJSON(item),
+            type: "put",
+            contentType: "application/json",
+            success: function (result) {
+                console.log(result);
+                self.observableArray.remove(item);
             }
         });
     }
@@ -57,21 +80,33 @@ function mainViewModel() {
     self.searchLastName = ko.observable();
     self.searchBirthday = ko.observable();
 
-    self.students = ko.observableArray([]);
+    self.remoteStudents = new remoteObservableCollection(baseAddress, "students");;
+    self.students = self.remoteStudents.observableArray;
+
+    self.student = {
+        id: ko.observable(),
+        name: ko.observable(),
+        surname: ko.observable(),
+        birthday: ko.observable()
+    }
 
     //Behavior
 
-    self.goToStudents = function (students, event) {
+    self.goToStudents = function () {
         location.hash = "students";
         return true;
     }
 
     self.addStudent = function () {
-        self.students.push(new Student(self.lastIndex() + 1, "", "", ""));
+        self.remoteStudents.add(self.student);
+        self.student.id("");
+        self.student.name("");
+        self.student.surname("");
+        self.student.birthday("");
     }
 
-    self.deleteStudent = function (Student) {
-        self.students.remove(Student);
+    self.deleteStudent = function (item) {
+        self.remoteStudents.remove(item);
     }
 
     self.lastIndex = function () {
@@ -82,9 +117,7 @@ function mainViewModel() {
     };
 
     self.getStudents = function () {
-        $.getJSON(baseAddress + "students", function (allData) {
-            self.collectionMapLogic(allData, self.students);
-        });
+        self.remoteStudents.getFromRemote();
     }
 
     //Marks
@@ -94,26 +127,36 @@ function mainViewModel() {
     self.searchMark = ko.observable();
     self.searchDate = ko.observable();
 
-    self.marks = ko.observableArray([]);
+    self.remoteMarks = new remoteObservableCollection(baseAddress, "marks");
+
+    self.marks = remoteMarks.observableArray;
+
+    self.mark = {
+        studentId: ko.observable(),
+        value: ko.observable(),
+        submitTime: ko.observable(),
+    }
 
     //Behavior
-    self.goToMarks = function (marks) {
-        location.hash = "marks";
+    self.goToMarks = function () {
+        location.hash = 'marks';
         return true;
     }
 
     self.addMark = function () {
-        self.marks.push(new Mark(0, "", ""));
+        self.remoteMarks.add(self.mark);
+
+        self.mark.studentId("");
+        self.mark.value("");
+        self.submitTime.value("");
     }
 
-    self.deleteMark = function (Mark) {
-        self.marks.remove(Mark);
+    self.deleteMark = function (item) {
+        self.remoteMarks.remove(item);
     }
     self.getMarks = function () {
-        $.getJSON(baseAddress + "marks", function (allData) {
-            self.collectionMapLogic(allData, self.marks);
-        });
-    }
+        self.remoteMarks.getFromRemote();
+    };
 
     //Subjects
 
@@ -145,19 +188,21 @@ function mainViewModel() {
         self.subject.teacher("");
     }
 
-    self.deleteSubject = function (Subject) {
-        self.subjects.remove(Subject);
+    self.deleteSubject = function (item) {
+        self.remoteSubjects.remove(item);
     }
 
     self.getSubjects = function () {
-        remoteSubjects.getFromRemote();
+        self.remoteSubjects.getFromRemote();
     }
 
     // Client-side routes
     Sammy(function () {
         this.get('#:name', function () {
+            console.log(this.params.name);
             self.chosenTableHash(this.params.name);
             var name = "get" + this.params.name[0].toUpperCase() + this.params.name.slice(1);
+            console.log(name);
             self[name].call(self);
         });
 
