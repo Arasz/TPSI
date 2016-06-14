@@ -1,4 +1,4 @@
-﻿"use strict;"
+"use strict;"
 
 function remoteObservableCollection(baseUrl, collectionUrl) {
     var self = this;
@@ -20,7 +20,10 @@ function remoteObservableCollection(baseUrl, collectionUrl) {
     }
 
     self.remove = function (item) {
-        $.ajax(self.url + "/" + item.id, {
+        console.log(self.url + "/" + ko.mapping.toJS(item).id);
+        $.ajax( 
+        {
+            url: self.url + "/" + ko.mapping.toJS(item).id,
             type: "delete",
             success: function (result) {
                 console.log(result);
@@ -30,7 +33,7 @@ function remoteObservableCollection(baseUrl, collectionUrl) {
     }
 
     self.update = function (item) {
-        $.ajax(self.url + "/" + item.id, {
+        $.ajax(self.url + "/" + ko.mapping.toJS(item).id, {
             data: ko.toJSON(item),
             type: "put",
             contentType: "application/json",
@@ -77,7 +80,14 @@ function mainViewModel() {
     self.students = self.remoteStudents.observableArray;
 
     self.student = {
-        id: ko.observable(),
+        id: ko.computed(
+           function () {
+            var underlyingArray = students();
+            var length = underlyingArray.length;
+            if (length === 0) return 0;
+            console.log(underlyingArray[length - 1].id())
+            return underlyingArray[length - 1].id()+1;
+           }, this),
         name: ko.observable(),
         surname: ko.observable(),
         birthday: ko.observable()
@@ -92,7 +102,7 @@ function mainViewModel() {
 
     self.addStudent = function () {
         self.remoteStudents.add(self.student);
-        self.student.id("");
+        self.student.id();
         self.student.name("");
         self.student.surname("");
         self.student.birthday("");
@@ -102,12 +112,7 @@ function mainViewModel() {
         self.remoteStudents.remove(item);
     }
 
-    self.lastIndex = function () {
-        var underlyingArray = students();
-        var length = underlyingArray.length;
-        if (length === 0) return 0;
-        return underlyingArray[length - 1].id;
-    };
+
 
     self.getStudents = function () {
         self.remoteStudents.getFromRemote();
@@ -141,7 +146,7 @@ function mainViewModel() {
 
         self.mark.studentId("");
         self.mark.value("");
-        self.submitTime.value("");
+        self.mark.submitTime("");
     }
 
     self.deleteMark = function (item) {
@@ -189,6 +194,7 @@ function mainViewModel() {
         self.remoteSubjects.getFromRemote();
     }
 };
+
 
 var viewModel = new mainViewModel();
 
