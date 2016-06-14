@@ -62,13 +62,6 @@ function mainViewModel() {
 
     self.baseAddress = "http://localhost:60732/api/";
 
-    self.collectionMapLogic = function (data, collection) {
-        console.log(data);
-        var mapped = $.map(data, function (item) { return ko.mapping.fromJS(item); });
-        collection(mapped);
-        console.log(mapped);
-    }
-
     self.chosenTableHash = ko.observable();
 
     // Students
@@ -92,7 +85,7 @@ function mainViewModel() {
 
     //Behavior
 
-    self.goToStudents = function () {
+    self.goToStudents = function (param) {
         location.hash = "students";
         return true;
     }
@@ -138,8 +131,8 @@ function mainViewModel() {
     }
 
     //Behavior
-    self.goToMarks = function () {
-        location.hash = 'marks';
+    self.goToMarks = function (param) {
+        location.hash = "marks";
         return true;
     }
 
@@ -176,7 +169,7 @@ function mainViewModel() {
 
     //Behavior
 
-    self.goToSubjects = function () {
+    self.goToSubjects = function (param) {
         location.hash = "subjects";
         return true;
     }
@@ -195,23 +188,22 @@ function mainViewModel() {
     self.getSubjects = function () {
         self.remoteSubjects.getFromRemote();
     }
+};
 
+var viewModel = new mainViewModel();
+
+$(document).ready(function () {
     // Client-side routes
-    Sammy(function () {
+    $.sammy(function () {
         this.get('#:name', function () {
             console.log(this.params.name);
             self.chosenTableHash(this.params.name);
-            var name = "get" + this.params.name[0].toUpperCase() + this.params.name.slice(1);
+            var name = "get" + (this.params.name[0].toUpperCase() + this.params.name.slice(1));
             console.log(name);
             self[name].call(self);
         });
 
         this.get('', function () { this.app.runRoute('get', '#students') });
     }).run();
-};
-
-var viewModel = new mainViewModel();
-
-$(document).ready(function () {
     ko.applyBindings(viewModel);
 });
